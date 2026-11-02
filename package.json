@@ -9,7 +9,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "api": ".venv\\Scripts\\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8765",
     "test:api": ".venv\\Scripts\\python.exe -m unittest discover -s backend/tests -v",
-    "test:math": "node --test frontend/tests/math.test.mjs frontend/tests/matrix.test.mjs frontend/tests/columns.test.mjs frontend/tests/export.test.mjs frontend/tests/numeric-input.test.mjs",
+    "test:math": "node --test frontend/tests/math.test.mjs frontend/tests/matrix.test.mjs frontend/tests/columns.test.mjs frontend/tests/export.test.mjs frontend/tests/numeric-input.test.mjs frontend/tests/seasonality-presets.test.mjs",
     "start": "node scripts/start.mjs",
     "start:production": "node scripts/start.mjs --production"
   },

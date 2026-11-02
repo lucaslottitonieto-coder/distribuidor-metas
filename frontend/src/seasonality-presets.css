@@ -1,0 +1,17 @@
+.season-presets { margin: 18px 0; }
+.season-presets-heading { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; margin-bottom: 10px; }
+.season-presets-heading strong { font-size: 13px; color: #315b36; }
+.season-presets-heading small { font-size: 12px; color: #6d7c69; }
+.season-presets-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.season-preset { display: flex; align-items: center; gap: 12px; padding: 14px; text-align: left; font: inherit; color: #315b36; background: #fff; border: 1px solid #dce5d5; border-radius: 10px; cursor: pointer; }
+.season-preset > span:last-child { min-width: 0; }
+.season-preset strong, .season-preset small { display: block; }
+.season-preset strong { font-size: 13px; }
+.season-preset small { margin-top: 4px; font-size: 11px; line-height: 1.4; color: #6d7c69; }
+.season-preset:hover:not(:disabled), .season-preset[aria-pressed="true"] { border-color: #3a9b1a; background: #f3f8ef; }
+.season-preset:focus-visible { outline: 2px solid #3a9b1a; outline-offset: 3px; }
+.season-preset:disabled { opacity: .5; cursor: default; }
+.season-preset-chart { display: flex; flex: 0 0 62px; align-items: flex-end; gap: 2px; height: 30px; }
+.season-preset-chart i { flex: 1; background: #3a9b1a; border-radius: 2px 2px 0 0; }
+.season-profile .season-presets { margin: 0; padding: 0 20px 20px; }
+@media (max-width: 760px) { .season-presets-options { grid-template-columns: 1fr; } }

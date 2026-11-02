@@ -2,7 +2,7 @@ import { NumberInput } from './NumberInput';
 import { distributionStep, unitScale } from './units';
 import { useEffect, useState } from 'react';
 import { Badge, Button, Card, Checkbox, Dialog, Field, Input, Select, toast } from 'broto-ui';
-import { ArrowRight, CheckCheck, ChevronRight, CircleAlert, Equal, RotateCcw, Save, ShieldCheck } from 'lucide-react';
+import { ArrowRight, CheckCheck, ChevronRight, CircleAlert, RotateCcw, Save, ShieldCheck } from 'lucide-react';
 import { api, apportion, errorText, money, months, number, shortMonths, type Agency, type MatrixRow, type Product, type PlanningMatrix, type SeasonalityData, type SeasonalityProfile } from './api';
 import { useApp, useRemote } from './context';
 import { Empty, Failure, Loading, PageHead } from './shared';
@@ -10,6 +10,8 @@ import { AgencyOptions, RegionalSelect, RegionalTag, agenciesOf, useRegionalAgen
 import './seasonality.css';
 import { ClosureNotice, useClosedMonths } from './Closures';
 import { apportionOpen } from './math';
+import { SeasonalityPresets } from './SeasonalityPresets';
+import { seasonalityDraftMatches } from './seasonalityModels';
 
 const colors = ['#197844', '#20b8e8', '#3da30d', '#e75b15', '#9973b1', '#ffcd00'];
 type SaveAction = 'save' | 'apply';
@@ -44,7 +46,7 @@ function SeasonalityWorkspace({ profiles, planning, loading, error }: { profiles
   const product = products.find(p => p.id === productId);
   const profile = saved[productId] || profiles.find(p => p.product_id === productId);
   const weights = drafts[productId] || profile?.weights.map(String) || [];
-  const dirty = !!drafts[productId];
+  const dirty = !!drafts[productId] && !seasonalityDraftMatches(drafts[productId], profile?.weights);
   const nums = weights.map(v => Number(v));
   const bps = nums.map(v => Math.round(v * 100));
   const sum = bps.reduce((a, b) => a + b, 0);
@@ -55,7 +57,9 @@ function SeasonalityWorkspace({ profiles, planning, loading, error }: { profiles
   const scale = unitScale(product?.unit || 'BRL');
   const total = rows.reduce((s, r) => s + Math.round(r.goal.annual_amount * scale), 0);
   const peak = Math.max(...nums.filter(Number.isFinite), 1);
-  const totalDirty = Object.keys(drafts).length;
+  const totalDirty = Object.entries(drafts).filter(([id, values]) =>
+    !seasonalityDraftMatches(values, (saved[Number(id)] || profiles.find(p => p.product_id === Number(id)))?.weights),
+  ).length;
   const availableTargets = review?.targets || [];
   const selectedTargets = availableTargets.filter(r => selectedGoals.includes(r.goal.id));
   const confirmationWord = action === 'apply' ? 'APLICAR' : 'SALVAR';
@@ -68,6 +72,7 @@ function SeasonalityWorkspace({ profiles, planning, loading, error }: { profiles
   }, [profiles]);
 
   const update = (values: string[]) => {
+    if (review || busy || applying) return;
     setDrafts(d => ({ ...d, [productId]: values }));
     setFormError('');
   };
@@ -97,7 +102,9 @@ function SeasonalityWorkspace({ profiles, planning, loading, error }: { profiles
         goals: action === 'apply' ? selectedTargets.map(r => ({ goal_id: r.goal.id, revision: r.goal.revision })) : [],
       }, 'POST');
       setSaved(s => ({ ...s, [review.product.id]: result.profile }));
-      setDrafts(d => { const next = { ...d }; delete next[review.product.id]; return next; });
+      // Mantém nos campos a resposta confirmada, inclusive durante o refresh dos perfis.
+      // Apagar o rascunho aqui faria a tela depender novamente do perfil anterior.
+      setDrafts(d => ({ ...d, [review.product.id]: result.profile.weights.map(String) }));
       setReview(null); setConfirmation(''); refresh();
       if (action === 'apply') toast.success('Percentuais salvos e aplicados', `${result.applied} ${result.applied === 1 ? 'agência atualizada' : 'agências atualizadas'}. Revise as distribuições por carteira.`);
       else toast.success('Percentuais salvos', `O padrão de ${review.product.sub_product} para ${review.year} foi salvo. As metas das agências foram mantidas.`);
@@ -115,14 +122,15 @@ function SeasonalityWorkspace({ profiles, planning, loading, error }: { profiles
         {products.map(p => {
           const configured = saved[p.id] || profiles.find(s => s.product_id === p.id);
           return <button key={p.id} type="button" aria-pressed={productId === p.id} disabled={busy || applying} onClick={() => { setProductId(p.id); setFormError(''); }} className={`season-product ${productId === p.id ? 'selected' : ''}`}>
-            <span className="season-product-color" style={{ background: colors[(p.id - 1) % colors.length] }} /><span><strong>{p.sub_product}</strong><small>{p.name} · {drafts[p.id] ? 'Alterações não salvas' : configured?.revision ? 'Percentuais salvos' : 'A configurar'}</small></span><ChevronRight size={15} />
+            <span className="season-product-color" style={{ background: colors[(p.id - 1) % colors.length] }} /><span><strong>{p.sub_product}</strong><small>{p.name} · {drafts[p.id] && !seasonalityDraftMatches(drafts[p.id], configured?.weights) ? 'Alterações não salvas' : configured?.revision ? 'Percentuais salvos' : 'A configurar'}</small></span><ChevronRight size={15} />
           </button>;
         })}
         <p>Os percentuais são independentes por subproduto e ano.</p>
       </aside>
       <Card className="season-profile" title={product.sub_product} subtitle={`${product.name} · Participação mensal na meta anual`} actions={<Badge tone={dirty ? 'pending' : profile.revision ? 'success' : 'neutral'}>{dirty ? 'Não salvo' : profile.revision ? 'Salvo' : 'A configurar'}</Badge>} flush>
-        <div className="season-editor-toolbar"><span><strong>Percentuais por mês</strong><small>{product.unit === 'BRL' ? 'Ex.: 10% de R$ 100.000 = R$ 10.000 no mês.' : product.unit === 'PCT' ? 'Ex.: peso de 10% sobre uma meta de 25% = 2,5% no mês.' : 'Ex.: 10% de 1.000 unidades = 100 unidades no mês.'}</small></span><div><Button size="sm" icon={<RotateCcw size={14} />} disabled={!dirty || busy || applying} onClick={reset}>Desfazer</Button><Button size="sm" icon={<Equal size={15} />} disabled={busy || applying || locked.size===12} onClick={() => update((apportionOpen(10000, Array(12).fill(1), profile.weights.map(v=>Math.round(v*100)), locked)||bps).map(v => String(v / 100)))}>Dividir igualmente</Button></div></div>
-        <fieldset className="season-grid" disabled={busy || applying}><legend className="sr-only">Percentuais mensais de {product.sub_product}</legend>{months.map((m, i) => <div className="season-weight" key={m}>
+        <div className="season-editor-toolbar"><span><strong>Percentuais por mês</strong><small>{product.unit === 'BRL' ? 'Ex.: 10% de R$ 100.000 = R$ 10.000 no mês.' : product.unit === 'PCT' ? 'Ex.: peso de 10% sobre uma meta de 25% = 2,5% no mês.' : 'Ex.: 10% de 1.000 unidades = 100 unidades no mês.'}</small></span><div><Button size="sm" icon={<RotateCcw size={14} />} disabled={!dirty || busy || applying} onClick={reset}>Desfazer</Button></div></div>
+        <SeasonalityPresets weights={bps} original={profile.weights.map(v => Math.round(v * 100))} closed={locked} disabled={!!review || busy || applying || loading || !!error} onSelect={(_, values) => update(values)} />
+        <fieldset className="season-grid" disabled={!!review || busy || applying}><legend className="sr-only">Percentuais mensais de {product.sub_product}</legend>{months.map((m, i) => <div className="season-weight" key={m}>
           <label htmlFor={`season-weight-${i}`}><small>{String(i + 1).padStart(2, '0')}</small>{m}{locked.has(i+1)?' · Fechado':''}</label>
           <div className="season-bar" aria-hidden="true"><span style={{ height: `${Math.min(Math.max(Number.isFinite(nums[i]) ? nums[i] : 0, 0), 100) / peak * 100}%` }} /></div>
           <div className="season-percent-input"><NumberInput adjustOnWheel title="Role para cima para aumentar ou para baixo para diminuir em 0,01%." disabled={locked.has(i+1)} id={`season-weight-${i}`} aria-label={`Percentual de ${m}`} aria-invalid={weights[i] === '' || !Number.isFinite(nums[i]) || nums[i] < 0 || nums[i] > 100 || Math.abs(nums[i] * 100 - bps[i]) >= .00001} min={0} max={100} step="0.01" value={weights[i] ?? ''} onValueChange={value => update(weights.map((v, j) => i === j ? value : v))} /><span>%</span></div>
