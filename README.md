@@ -66,6 +66,8 @@ Cada linha de Parametrizações é um **subproduto** de um **produto** (por exem
 
 Os editores de sazonalidade (página Sazonalidade, edição da agência e distribuição do total anual) oferecem três modelos prontos: **Igual entre os meses**, **Maior no meio do ano** (começa e termina baixo, com pico em junho/julho) e **Crescente mês a mês** (aumenta de janeiro até dezembro). Escolher um modelo atualiza os percentuais e a prévia; os ajustes continuam disponíveis e só são gravados ao salvar/aplicar. Os percentuais fecham em 100%, com até duas casas decimais, e meses fechados são preservados. Na distribuição anual, os modelos aparecem somente na opção Sazonalidade do subproduto; ficam ocultos em Percentuais personalizados e Divisão igual. A escolha de um modelo mantém a opção Sazonalidade selecionada. O modelo igual usa a divisão direta do saldo entre os meses abertos.
 
+Na página Sazonalidade, a confirmação mostra os 12 percentuais antes do envio e o resultado confirmado pelo servidor após salvar. Clique em **Concluir** para voltar ao editor. Os ajustes dos meses são atualizados em conjunto, e leituras anteriores ao salvamento não substituem a configuração confirmada.
+
 1. A soma das participações deve ser **exatamente 100,00%**. Informar 10% e 50%, deixando 40% sem atribuição, bloqueia o botão e resulta em erro 422 na API.
 2. Na edição por valor, a soma das carteiras deve coincidir com a meta do mês até o último centavo/unidade.
 3. Percentuais aceitam duas casas decimais. Valores negativos, não finitos, carteiras repetidas ou pertencentes a outra agência são rejeitados.

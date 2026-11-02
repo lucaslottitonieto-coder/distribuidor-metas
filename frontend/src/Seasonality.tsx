@@ -1,6 +1,6 @@
 import { NumberInput } from './NumberInput';
 import { distributionStep, unitScale } from './units';
-import { useEffect, useState } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import { Badge, Button, Card, Checkbox, Dialog, Field, Input, Select, toast } from 'broto-ui';
 import { ArrowRight, CheckCheck, ChevronRight, CircleAlert, RotateCcw, Save, ShieldCheck } from 'lucide-react';
 import { api, apportion, errorText, money, months, number, shortMonths, type Agency, type MatrixRow, type Product, type PlanningMatrix, type SeasonalityData, type SeasonalityProfile } from './api';
@@ -11,7 +11,7 @@ import './seasonality.css';
 import { ClosureNotice, useClosedMonths } from './Closures';
 import { apportionOpen } from './math';
 import { SeasonalityPresets } from './SeasonalityPresets';
-import { seasonalityDraftMatches } from './seasonalityModels';
+import { confirmedSeasonalitySave, seasonalityEditorReducer, seasonalityEditorState } from './seasonalityEditor';
 
 const colors = ['#197844', '#20b8e8', '#3da30d', '#e75b15', '#9973b1', '#ffcd00'];
 type SaveAction = 'save' | 'apply';
@@ -34,19 +34,21 @@ function SeasonalityWorkspace({ profiles, planning, loading, error }: { profiles
   const products = data.products.filter(p => p.active);
   const [productId, setProductId] = useState(products[0]?.id || 0);
   const { regional, agency: agencyId, setRegional, setAgency: setAgencyId } = useRegionalAgency();
-  const [drafts, setDrafts] = useState<Record<number, string[]>>({});
-  const [saved, setSaved] = useState<Record<number, SeasonalityProfile>>({});
+  const [editor, dispatch] = useReducer(seasonalityEditorReducer, profiles, seasonalityEditorState);
+  const { drafts } = editor;
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState('');
   const [applying, setApplying] = useState(false);
   const [review, setReview] = useState<SaveReview | null>(null);
+  const [saveResult, setSaveResult] = useState<{ profile: SeasonalityProfile; applied: number } | null>(null);
+  const savePhase = useRef<'editing' | 'review' | 'saving' | 'saved'>('editing');
   const [action, setAction] = useState<SaveAction>('save');
   const [selectedGoals, setSelectedGoals] = useState<number[]>([]);
   const [confirmation, setConfirmation] = useState('');
   const product = products.find(p => p.id === productId);
-  const profile = saved[productId] || profiles.find(p => p.product_id === productId);
+  const profile = editor.profiles[productId];
   const weights = drafts[productId] || profile?.weights.map(String) || [];
-  const dirty = !!drafts[productId] && !seasonalityDraftMatches(drafts[productId], profile?.weights);
+  const dirty = !!drafts[productId];
   const nums = weights.map(v => Number(v));
   const bps = nums.map(v => Math.round(v * 100));
   const sum = bps.reduce((a, b) => a + b, 0);
@@ -57,9 +59,7 @@ function SeasonalityWorkspace({ profiles, planning, loading, error }: { profiles
   const scale = unitScale(product?.unit || 'BRL');
   const total = rows.reduce((s, r) => s + Math.round(r.goal.annual_amount * scale), 0);
   const peak = Math.max(...nums.filter(Number.isFinite), 1);
-  const totalDirty = Object.entries(drafts).filter(([id, values]) =>
-    !seasonalityDraftMatches(values, (saved[Number(id)] || profiles.find(p => p.product_id === Number(id)))?.weights),
-  ).length;
+  const totalDirty = Object.keys(drafts).length;
   const availableTargets = review?.targets || [];
   const selectedTargets = availableTargets.filter(r => selectedGoals.includes(r.goal.id));
   const confirmationWord = action === 'apply' ? 'APLICAR' : 'SALVAR';
@@ -67,22 +67,28 @@ function SeasonalityWorkspace({ profiles, planning, loading, error }: { profiles
 
   useEffect(() => { setUnsaved(totalDirty > 0); }, [totalDirty, setUnsaved]);
   useEffect(() => () => setUnsaved(false), [setUnsaved]);
-  useEffect(() => {
-    setSaved(current => Object.fromEntries(Object.entries(current).filter(([id, local]) => (profiles.find(p => p.product_id === Number(id))?.revision ?? 0) < local.revision)));
-  }, [profiles]);
+  useEffect(() => { dispatch({ type: 'load', profiles }); }, [profiles]);
 
   const update = (values: string[]) => {
-    if (review || busy || applying) return;
-    setDrafts(d => ({ ...d, [productId]: values }));
+    if (savePhase.current !== 'editing') return;
+    dispatch({ type: 'replace', productId, values });
+    setFormError('');
+  };
+  const updateMonth = (index: number, value: string) => {
+    if (savePhase.current !== 'editing') return;
+    dispatch({ type: 'month', productId, index, value });
     setFormError('');
   };
   const reset = () => {
-    setDrafts(d => { const next = { ...d }; delete next[productId]; return next; });
+    if (savePhase.current !== 'editing') return;
+    dispatch({ type: 'reset', productId });
     setFormError('');
   };
   const openSave = (nextAction: SaveAction) => {
-    if (!valid || !profile || !product || busy || loading || error) return;
+    if (!valid || !profile || !product || savePhase.current !== 'editing' || busy || loading || error) return;
+    savePhase.current = 'review';
     setReview({ product, year, revision: profile.revision, weights: [...nums], agencies: data.agencies.filter(a => a.active), targets: productRows });
+    setSaveResult(null);
     setAction(nextAction);
     setSelectedGoals(productRows.map(r => r.goal.id));
     setConfirmation(''); setFormError('');
@@ -94,21 +100,30 @@ function SeasonalityWorkspace({ profiles, planning, loading, error }: { profiles
     setSelectedGoals(ids); setConfirmation(''); setFormError('');
   };
   const confirmSave = async () => {
-    if (!review || !canConfirm || busy || loading || error) return;
+    if (!review || !canConfirm || savePhase.current !== 'review' || busy || loading || error) return;
+    savePhase.current = 'saving';
     setBusy(true); setApplying(action === 'apply'); setFormError('');
     try {
       const result = await api<{ profile: SeasonalityProfile; applied: number }>(`/seasonality/${review.product.id}/${review.year}/save`, {
         revision: review.revision, weights: review.weights, action, confirmation: confirmation.trim(),
         goals: action === 'apply' ? selectedTargets.map(r => ({ goal_id: r.goal.id, revision: r.goal.revision })) : [],
       }, 'POST');
-      setSaved(s => ({ ...s, [review.product.id]: result.profile }));
-      // Mantém nos campos a resposta confirmada, inclusive durante o refresh dos perfis.
-      // Apagar o rascunho aqui faria a tela depender novamente do perfil anterior.
-      setDrafts(d => ({ ...d, [review.product.id]: result.profile.weights.map(String) }));
-      setReview(null); setConfirmation(''); refresh();
+      if (!confirmedSeasonalitySave(result.profile, review)) throw new Error('O servidor não confirmou os mesmos percentuais. Seus ajustes foram mantidos; tente salvar novamente.');
+      savePhase.current = 'saved';
+      dispatch({ type: 'saved', profile: result.profile, submitted: review.weights });
+      // Mantém o resultado visível e o editor bloqueado até fechar a confirmação.
+      // Assim o fechamento automático não devolve um clique/Enter ao modelo de fundo.
+      setSaveResult(result); setConfirmation('');
       if (action === 'apply') toast.success('Percentuais salvos e aplicados', `${result.applied} ${result.applied === 1 ? 'agência atualizada' : 'agências atualizadas'}. Revise as distribuições por carteira.`);
       else toast.success('Percentuais salvos', `O padrão de ${review.product.sub_product} para ${review.year} foi salvo. As metas das agências foram mantidas.`);
-    } catch (e) { setFormError(errorText(e)); } finally { setBusy(false); setApplying(false); }
+    } catch (e) { savePhase.current = 'review'; setFormError(errorText(e)); } finally { setBusy(false); setApplying(false); }
+  };
+  const closeReview = () => {
+    if (savePhase.current === 'saving') return;
+    const completed = savePhase.current === 'saved';
+    savePhase.current = 'editing';
+    setReview(null); setSaveResult(null); setConfirmation('');
+    if (completed) refresh();
   };
 
   if (!product || !profile) return <><PageHead title="Sazonalidade" description="Configure os percentuais mensais de cada subproduto." /><Empty title="Cadastre um subproduto ativo para configurar a sazonalidade"><Button onClick={() => navigate('/parametros')}>Gerenciar subprodutos</Button></Empty></>;
@@ -116,13 +131,13 @@ function SeasonalityWorkspace({ profiles, planning, loading, error }: { profiles
   return <div className="season-page" aria-busy={busy || applying}>
     <PageHead title="Sazonalidade" description="Defina quanto da meta anual de cada subproduto pertence a cada mês." /><ClosureNotice/>
     {!!error && <Failure error={error} retry={refresh} />}
-    <div className="season-workspace">
+    <div className="season-workspace" inert={!!review}>
       <aside className="season-products" aria-label="Subprodutos para configurar">
         <div className="season-products-title"><span>SUBPRODUTOS</span><small>{products.length}</small></div>
         {products.map(p => {
-          const configured = saved[p.id] || profiles.find(s => s.product_id === p.id);
-          return <button key={p.id} type="button" aria-pressed={productId === p.id} disabled={busy || applying} onClick={() => { setProductId(p.id); setFormError(''); }} className={`season-product ${productId === p.id ? 'selected' : ''}`}>
-            <span className="season-product-color" style={{ background: colors[(p.id - 1) % colors.length] }} /><span><strong>{p.sub_product}</strong><small>{p.name} · {drafts[p.id] && !seasonalityDraftMatches(drafts[p.id], configured?.weights) ? 'Alterações não salvas' : configured?.revision ? 'Percentuais salvos' : 'A configurar'}</small></span><ChevronRight size={15} />
+          const configured = editor.profiles[p.id];
+          return <button key={p.id} type="button" aria-pressed={productId === p.id} disabled={!!review || busy || applying} onClick={() => { setProductId(p.id); setFormError(''); }} className={`season-product ${productId === p.id ? 'selected' : ''}`}>
+            <span className="season-product-color" style={{ background: colors[(p.id - 1) % colors.length] }} /><span><strong>{p.sub_product}</strong><small>{p.name} · {drafts[p.id] ? 'Alterações não salvas' : configured?.revision ? 'Percentuais salvos' : 'A configurar'}</small></span><ChevronRight size={15} />
           </button>;
         })}
         <p>Os percentuais são independentes por subproduto e ano.</p>
@@ -133,7 +148,7 @@ function SeasonalityWorkspace({ profiles, planning, loading, error }: { profiles
         <fieldset className="season-grid" disabled={!!review || busy || applying}><legend className="sr-only">Percentuais mensais de {product.sub_product}</legend>{months.map((m, i) => <div className="season-weight" key={m}>
           <label htmlFor={`season-weight-${i}`}><small>{String(i + 1).padStart(2, '0')}</small>{m}{locked.has(i+1)?' · Fechado':''}</label>
           <div className="season-bar" aria-hidden="true"><span style={{ height: `${Math.min(Math.max(Number.isFinite(nums[i]) ? nums[i] : 0, 0), 100) / peak * 100}%` }} /></div>
-          <div className="season-percent-input"><NumberInput adjustOnWheel title="Role para cima para aumentar ou para baixo para diminuir em 0,01%." disabled={locked.has(i+1)} id={`season-weight-${i}`} aria-label={`Percentual de ${m}`} aria-invalid={weights[i] === '' || !Number.isFinite(nums[i]) || nums[i] < 0 || nums[i] > 100 || Math.abs(nums[i] * 100 - bps[i]) >= .00001} min={0} max={100} step="0.01" value={weights[i] ?? ''} onValueChange={value => update(weights.map((v, j) => i === j ? value : v))} /><span>%</span></div>
+          <div className="season-percent-input"><NumberInput adjustOnWheel title="Role para cima para aumentar ou para baixo para diminuir em 0,01%." disabled={locked.has(i+1)} id={`season-weight-${i}`} aria-label={`Percentual de ${m}`} aria-invalid={weights[i] === '' || !Number.isFinite(nums[i]) || nums[i] < 0 || nums[i] > 100 || Math.abs(nums[i] * 100 - bps[i]) >= .00001} min={0} max={100} step="0.01" value={weights[i] ?? ''} onValueChange={value => updateMonth(i, value)} /><span>%</span></div>
         </div>)}</fieldset>
         <div className="season-quarter-summary">{[0, 1, 2, 3].map(q => <span key={q}>{q + 1}º trimestre <strong>{validFields ? `${number(bps.slice(q * 3, q * 3 + 3).reduce((s, v) => s + v, 0) / 100, 2)}%` : '—'}</strong></span>)}</div>
         <div className="season-save-footer"><div className={`season-balance ${valid ? 'valid-text' : 'invalid-text'}`} role="status">{valid ? <CheckCheck size={21} /> : <CircleAlert size={21} />}<div><strong>{validFields ? `${number(sum / 100, 2)}%` : 'Revise os percentuais'}<span>{valid ? ' de 100% distribuídos' : validFields ? sum < 10000 ? ` · Faltam ${number((10000 - sum) / 100, 2)}%` : ` · Excedeu ${number((sum - 10000) / 100, 2)}%` : ''}</span></strong><small>{valid ? 'Pronto para distribuir a meta ao longo do ano.' : 'Use valores de 0 a 100 com até 2 casas decimais. O total deve ser 100%.'}</small></div></div><Button variant="primary" icon={<Save size={16} />} loading={busy} disabled={!valid || busy || applying || loading || !!error || locked.size===12} onClick={() => openSave('save')}>Salvar percentuais</Button></div>
@@ -148,15 +163,17 @@ function SeasonalityWorkspace({ profiles, planning, loading, error }: { profiles
       <div className="season-preview-footer"><div><strong>{rows.length} {rows.length === 1 ? 'agência' : 'agências'} · {money(total / scale, product.unit)} no ano</strong><small>Ao salvar, escolha entre guardar os percentuais ou aplicar às agências que você selecionar.</small></div><Button variant="primary" iconRight={<ArrowRight size={16} />} disabled={!valid || !productRows.length || loading || !!error || busy || applying || locked.size===12} onClick={() => openSave('apply')}>Aplicar às metas</Button></div>
     </Card>
     <div className="season-footnote"><ShieldCheck size={16} /><span>Salvar percentuais cria o padrão do subproduto. Aplicar às metas recalcula também os valores das carteiras.</span>{totalDirty > 1 && <strong>{totalDirty} subprodutos com alterações não salvas</strong>}</div>
-    <Dialog open={!!review} onClose={() => !busy && setReview(null)} title={`Salvar sazonalidade · ${review?.product.sub_product || product.sub_product}`} description={`Escolha como salvar os percentuais de ${review?.year || year}.`} size="lg" className="season-save-dialog" onSubmit={confirmSave} footer={<div className="season-confirm-footer">
+    <Dialog open={!!review} onClose={closeReview} closeOnOverlay={!busy && !saveResult} title={`${saveResult ? 'Sazonalidade salva' : 'Salvar sazonalidade'} · ${review?.product.sub_product || product.sub_product}`} description={saveResult ? `Percentuais confirmados para ${review?.year || year}.` : `Confira os percentuais de ${review?.year || year} e escolha como salvar.`} size="lg" className="season-save-dialog" onSubmit={saveResult ? undefined : confirmSave} footer={saveResult ? <Button variant="primary" onClick={closeReview}>Concluir</Button> : <div className="season-confirm-footer">
       <Field label={`Digite ${confirmationWord} para confirmar`} hint={action === 'apply' ? `Aplicar em ${selectedTargets.length} ${selectedTargets.length === 1 ? 'agência selecionada' : 'agências selecionadas'}.` : 'Guardar a configuração, sem alterar as metas.'}><Input aria-label={`Digite ${confirmationWord} para confirmar`} autoComplete="off" spellCheck={false} disabled={busy} placeholder={confirmationWord} value={confirmation} onChange={e => setConfirmation(e.target.value)} /></Field>
-      <div className="season-confirm-actions"><Button disabled={busy} onClick={() => setReview(null)}>Cancelar</Button><Button type="submit" variant="primary" icon={<Save size={16} />} loading={busy} disabled={!canConfirm || busy || loading || !!error}>{action === 'apply' ? 'Salvar e aplicar' : 'Salvar percentuais'}</Button></div>
+      <div className="season-confirm-actions"><Button disabled={busy} onClick={closeReview}>Cancelar</Button><Button type="submit" variant="primary" icon={<Save size={16} />} loading={busy} disabled={!canConfirm || busy || loading || !!error}>{action === 'apply' ? 'Salvar e aplicar' : 'Salvar percentuais'}</Button></div>
     </div>}>
-      <fieldset className="season-save-options" disabled={busy}><legend>O que deseja fazer?</legend>
+      {saveResult && <div className="season-save-success" role="status"><CheckCheck size={22}/><div><strong>Percentuais salvos com sucesso</strong><p>{saveResult.applied ? `Aplicados em ${saveResult.applied} ${saveResult.applied === 1 ? 'agência' : 'agências'}.` : 'A configuração exibida abaixo foi gravada.'}</p></div></div>}
+      {review && <dl className="season-review-weights" aria-label={saveResult ? 'Percentuais confirmados pelo servidor' : 'Percentuais que serão salvos'}>{(saveResult?.profile.weights ?? review.weights).map((weight, index) => <div key={index}><dt>{shortMonths[index]}</dt><dd>{number(weight, 2)}%</dd></div>)}</dl>}
+      {!saveResult && <fieldset className="season-save-options" disabled={busy}><legend>O que deseja fazer?</legend>
         <label className={`season-save-option ${action === 'save' ? 'selected' : ''}`}><input type="radio" name="season-save-action" value="save" checked={action === 'save'} onChange={() => changeAction('save')} /><span><strong>Salvar somente os percentuais</strong><small>Guarda a configuração nesta tela, sem alterar as metas das agências.</small></span></label>
         <label className={`season-save-option ${action === 'apply' ? 'selected' : ''}`}><input type="radio" name="season-save-action" value="apply" checked={action === 'apply'} onChange={() => changeAction('apply')} /><span><strong>Salvar e aplicar às metas</strong><small>Recalcula os meses abertos de {review?.product.sub_product} nas agências selecionadas.</small></span></label>
-      </fieldset>
-      {action === 'apply' && review && <div className="season-target-picker">
+      </fieldset>}
+      {!saveResult && action === 'apply' && review && <div className="season-target-picker">
         <div className="season-target-heading"><strong>Em quais agências aplicar?</strong><Badge tone={selectedTargets.length ? 'success' : 'pending'}>{selectedTargets.length} de {availableTargets.length} selecionadas</Badge></div>
         <p>Todas as agências disponíveis começam selecionadas. Desmarque as que quiser ou use “Somente esta” para escolher uma única agência.</p>
         <div className="season-target-toolbar"><Checkbox label="Todas as agências disponíveis" disabled={busy || !availableTargets.length} checked={availableTargets.length > 0 && selectedTargets.length === availableTargets.length} indeterminate={selectedTargets.length > 0 && selectedTargets.length < availableTargets.length} onChange={e => selectGoals(e.target.checked ? availableTargets.map(r => r.goal.id) : [])} /><Select aria-label="Aplicar somente a uma regional" value={0} disabled={busy || !availableTargets.length} onChange={e => selectGoals(availableTargets.filter(r => r.agency.regional_id === Number(e.target.value)).map(r => r.goal.id))}><option value={0}>Somente uma regional…</option>{data.regionals.filter(g => availableTargets.some(r => r.agency.regional_id === g.id)).map(g => <option key={g.id} value={g.id}>{g.name}</option>)}</Select><Button size="sm" variant="ghost" disabled={busy || !selectedTargets.length} onClick={() => selectGoals([])}>Desmarcar todas</Button></div>

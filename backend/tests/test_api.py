@@ -460,6 +460,24 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(r.json()['profile']['weights'], payload['weights'])
         self.assertEqual(self.client.get('/api/goals').json(), before)
 
+    def test_confirmed_save_preserves_april_increase_and_december_decrease(self):
+        original = [1.28, 2.56, 3.85, 5.13, 6.41, 7.69, 8.97, 10.26, 11.54, 12.82, 14.10, 15.39]
+        base = {'revision': 0, 'weights': original, 'action': 'save', 'confirmation': 'SALVAR'}
+        self.assertEqual(self.client.post('/api/seasonality/1/2026/save', json=base).status_code, 200)
+        goals_before = self.client.get('/api/goals?year=2026').json()
+        adjusted = original.copy()
+        adjusted[3] = 10.13
+        adjusted[11] = 10.39
+        response = self.client.post('/api/seasonality/1/2026/save', json={**base, 'revision': 1, 'weights': adjusted})
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()['profile']['weights'], adjusted)
+        self.assertEqual(response.json()['profile']['revision'], 2)
+        for _ in range(2):
+            loaded = self.client.get('/api/seasonality?year=2026').json()['profiles'][0]
+            self.assertEqual(loaded['weights'], adjusted)
+            self.assertEqual(loaded['revision'], 2)
+        self.assertEqual(self.client.get('/api/goals?year=2026').json(), goals_before)
+
     def test_confirmed_apply_can_select_nonconsecutive_agencies(self):
         r = self.client.post('/api/agencies', json={'code': '9999', 'name': 'Agência terceira', 'regional_id': 1, 'city': 'Curitiba', 'state': 'PR'})
         self.assertEqual(r.status_code, 201, r.text)
