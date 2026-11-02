@@ -1,0 +1,99 @@
+/* Estilos só do catálogo (não fazem parte da lib). */
+.pg-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
+  gap: 12px;
+}
+
+.pg-swatch {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--bt-border-soft);
+  border-radius: var(--bt-radius-box-xs);
+  overflow: hidden;
+  background: var(--bt-surface);
+}
+
+.pg-swatch-color {
+  height: 64px;
+}
+
+.pg-swatch-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+}
+
+.pg-swatch-meta .bt-mono {
+  font-size: 11.5px;
+  color: var(--bt-text-3);
+}
+
+.pg-demo-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.pg-code {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--bt-border);
+}
+
+.pg-code summary {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--bt-text-2);
+  margin-bottom: 10px;
+}
+
+.pg-code summary:hover {
+  color: var(--bt-green-700);
+}
+
+.pg-frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--bt-border);
+  border-radius: var(--bt-radius-box);
+  background: var(--bt-bg);
+}
+
+.pg-frame .bt-auth,
+.pg-frame .bt-fullscreen {
+  min-height: 600px;
+}
+
+.pg-shapes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.pg-shape {
+  display: grid;
+  place-items: center;
+  width: 150px;
+  height: 96px;
+  background: var(--bt-green-900);
+  color: var(--bt-green-200);
+  font-family: var(--bt-font-mono);
+  font-size: 12px;
+}
+
+.pg-type-sample {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--bt-border-soft);
+}
+
+.pg-type-sample:last-child {
+  border-bottom: 0;
+}

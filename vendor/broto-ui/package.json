@@ -1,0 +1,89 @@
+{
+  "name": "broto-ui",
+  "version": "0.1.0",
+  "description": "Biblioteca de componentes React com identidade visual verde: o box de canto reto, Exo 2 + Nunito e ícones de linha fina.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./utils": {
+      "import": {
+        "types": "./dist/utils.d.ts",
+        "default": "./dist/utils.js"
+      },
+      "require": {
+        "types": "./dist/utils.d.cts",
+        "default": "./dist/utils.cjs"
+      }
+    },
+    "./styles.css": "./dist/styles.css",
+    "./tokens.css": "./dist/tokens.css",
+    "./base.css": "./dist/base.css",
+    "./components.css": "./dist/components.css",
+    "./fonts.css": "./dist/fonts.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "docs/*.md",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "dev": "vite --config playground/vite.config.ts",
+    "build": "tsup && node scripts/build-css.mjs",
+    "build:playground": "vite build --config playground/vite.config.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p playground/tsconfig.json",
+    "prepare": "npm run build"
+  },
+  "peerDependencies": {
+    "react": ">=18.2",
+    "react-dom": ">=18.2"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "lucide-react": "^1.52.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tsup": "^8.5.1",
+    "typescript": "~5.9.3",
+    "vite": "^7.3.6",
+    "vite-plugin-singlefile": "^2.3.3"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "keywords": [
+    "react",
+    "components",
+    "design-system",
+    "ui",
+    "pt-br"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/edumartinsrib/broto-ui.git"
+  },
+  "homepage": "https://github.com/edumartinsrib/broto-ui#readme",
+  "bugs": {
+    "url": "https://github.com/edumartinsrib/broto-ui/issues"
+  }
+}

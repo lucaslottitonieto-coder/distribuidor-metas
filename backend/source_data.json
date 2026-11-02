@@ -1,0 +1,234 @@
+{
+  "source": "distruibuidor_de_metas.xlsx",
+  "agencies": [
+    {
+      "code": "073707",
+      "name": "Pato Branco Centro",
+      "city": "Pato Branco",
+      "state": "PR"
+    },
+    {
+      "code": "073702",
+      "name": "Mangueirinha",
+      "city": "Mangueirinha",
+      "state": "PR"
+    }
+  ],
+  "goals": [
+    {
+      "agency_code": "073707",
+      "year": 2026,
+      "product": "Crédito",
+      "months": [
+        1100000,
+        900000,
+        1000000,
+        null,
+        1100000,
+        1200000,
+        1000000,
+        1100000,
+        1000000,
+        1200000,
+        1100000,
+        1000000
+      ],
+      "source_annual": 11700000,
+      "source_row": "meta-agencia!B2:Q2"
+    },
+    {
+      "agency_code": "073707",
+      "year": 2026,
+      "product": "Associados Ativos",
+      "months": [
+        950,
+        950,
+        950,
+        null,
+        950,
+        950,
+        950,
+        950,
+        950,
+        950,
+        950,
+        950
+      ],
+      "source_annual": 11400,
+      "source_row": "meta-agencia!B3:Q3"
+    },
+    {
+      "agency_code": "073707",
+      "year": 2026,
+      "product": "Investimentos",
+      "months": [
+        1250000,
+        1250000,
+        1250000,
+        null,
+        1250000,
+        1250000,
+        1250000,
+        1250000,
+        1250000,
+        1250000,
+        1250000,
+        1250000
+      ],
+      "source_annual": 15000000,
+      "source_row": "meta-agencia!B4:Q4"
+    },
+    {
+      "agency_code": "073707",
+      "year": 2026,
+      "product": "Seguros",
+      "months": [
+        2500,
+        2500,
+        2500,
+        null,
+        2500,
+        2500,
+        2500,
+        2500,
+        2500,
+        2500,
+        2500,
+        2500
+      ],
+      "source_annual": 30000,
+      "source_row": "meta-agencia!B5:Q5"
+    },
+    {
+      "agency_code": "073702",
+      "year": 2026,
+      "product": "Crédito",
+      "months": [
+        700000,
+        650000,
+        750000,
+        null,
+        800000,
+        820000,
+        720000,
+        600000,
+        720000,
+        800000,
+        820000,
+        700000
+      ],
+      "source_annual": 8080000,
+      "source_row": "meta-agencia!B6:Q6"
+    },
+    {
+      "agency_code": "073702",
+      "year": 2026,
+      "product": "Associados Ativos",
+      "months": [
+        666.67,
+        666.67,
+        666.67,
+        null,
+        666.67,
+        666.67,
+        666.67,
+        666.67,
+        666.67,
+        666.67,
+        666.67,
+        666.67
+      ],
+      "source_annual": 8000,
+      "source_row": "meta-agencia!B7:Q7"
+    },
+    {
+      "agency_code": "073702",
+      "year": 2026,
+      "product": "Investimentos",
+      "months": [
+        708333.33,
+        708333.33,
+        708333.33,
+        null,
+        708333.33,
+        708333.33,
+        708333.33,
+        708333.33,
+        708333.33,
+        708333.33,
+        708333.33,
+        708333.33
+      ],
+      "source_annual": 8500000,
+      "source_row": "meta-agencia!B8:Q8"
+    },
+    {
+      "agency_code": "073702",
+      "year": 2026,
+      "product": "Seguros",
+      "months": [
+        1416.67,
+        1416.67,
+        1416.67,
+        null,
+        1416.67,
+        1416.67,
+        1416.67,
+        1416.67,
+        1416.67,
+        1416.67,
+        1416.67,
+        1416.67
+      ],
+      "source_annual": 17000,
+      "source_row": "meta-agencia!B9:Q9"
+    }
+  ],
+  "portfolios": [
+    {
+      "agency_code": "073707",
+      "code": "2",
+      "segment": "AG",
+      "suggested_percent": 15.0,
+      "percent": 10.0
+    },
+    {
+      "agency_code": "073707",
+      "code": "3",
+      "segment": "PF",
+      "suggested_percent": 18.0,
+      "percent": 20.0
+    },
+    {
+      "agency_code": "073707",
+      "code": "4",
+      "segment": "PJ",
+      "suggested_percent": 22.0,
+      "percent": 25.0
+    },
+    {
+      "agency_code": "073707",
+      "code": "5",
+      "segment": "PF",
+      "suggested_percent": 20.0,
+      "percent": 25.0
+    },
+    {
+      "agency_code": "073707",
+      "code": "6",
+      "segment": "PJ",
+      "suggested_percent": 25.0,
+      "percent": 20.0
+    }
+  ],
+  "warnings": [
+    "A coluna Abril está ausente nas duas abas. O sistema mantém abril em zero e sinaliza revisão, sem presumir valores.",
+    "073707 · Associados Ativos: soma dos meses difere do total declarado. Abril não está presente na origem.",
+    "073707 · Investimentos: soma dos meses difere do total declarado. Abril não está presente na origem.",
+    "073707 · Seguros: soma dos meses difere do total declarado. Abril não está presente na origem.",
+    "073702 · Associados Ativos: soma dos meses difere do total declarado. Abril não está presente na origem.",
+    "073702 · Investimentos: soma dos meses difere do total declarado. Abril não está presente na origem.",
+    "073702 · Seguros: soma dos meses difere do total declarado. Abril não está presente na origem.",
+    "Os totais da aba meta-carteira têm diferenças de arredondamento e somas. O sistema recalcula os valores pelas participações mensais e conserva o total da agência."
+  ]
+}

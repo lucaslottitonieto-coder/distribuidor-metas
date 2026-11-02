@@ -1,0 +1,208 @@
+.seasonality-editor .season-months {
+  gap: 14px;
+}
+
+.seasonality-editor .season-month {
+  align-items: stretch;
+  gap: 12px;
+  padding: 16px 14px;
+  background: #f7faf5;
+  border-color: #c6d5be;
+}
+
+.seasonality-editor .season-month > div:first-child {
+  gap: 8px;
+  min-height: 22px;
+}
+
+.seasonality-editor .season-month > div:first-child > span {
+  font-size: 12px;
+  color: #596b50;
+}
+
+.seasonality-editor .season-month > div:first-child > strong {
+  font-size: 15px;
+  font-weight: 800;
+  color: #244a2d;
+}
+
+.seasonality-editor .season-mini-bar {
+  width: 100%;
+  height: 6px;
+  background: #dce7d5;
+}
+
+.seasonality-editor .season-mini-bar > div {
+  height: 100%;
+  background: #43832b;
+}
+
+.seasonality-editor .weight-input .bt-input {
+  min-height: 48px;
+  padding: 8px 32px 8px 10px;
+  border-color: #8ba77a;
+  background: #fff;
+  font-size: 22px;
+  font-weight: 800;
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+  color: #234b2b;
+}
+
+.seasonality-editor .weight-input > span {
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  font-size: 14px;
+  font-weight: 750;
+  color: #465e3e;
+  pointer-events: none;
+}
+
+.seasonality-editor .season-month > small {
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.5;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  color: #334b32;
+}
+
+.seasonality-editor .season-month:focus-within {
+  border-color: #33820d;
+  box-shadow: 0 0 0 2px #33820d26;
+}
+
+.seasonality-editor .seasonality-top .bt-input {
+  color: #234b2b;
+  font-weight: 650;
+}
+
+.seasonality-editor .seasonality-total > span,
+.seasonality-editor .seasonality-total > small {
+  font-size: 12px;
+  color: #52664b;
+}
+
+.seasonality-editor .seasonality-footer > span {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #52664b;
+}
+
+@media (max-width: 580px) {
+  .seasonality-editor .season-months {
+    gap: 10px;
+  }
+
+  .seasonality-editor .season-month {
+    gap: 10px;
+    padding: 12px 9px;
+  }
+
+  .seasonality-editor .season-month > div:first-child {
+    flex-wrap: wrap;
+    gap: 3px 6px;
+  }
+
+  .seasonality-editor .season-month > div:first-child > strong {
+    font-size: 13px;
+  }
+
+  .seasonality-editor .season-month > div:first-child > span {
+    font-size: 11px;
+  }
+
+  .seasonality-editor .weight-input .bt-input {
+    font-size: 18px;
+    padding-left: 6px;
+    padding-right: 26px;
+  }
+
+  .seasonality-editor .weight-input > span {
+    right: 9px;
+    font-size: 12px;
+  }
+
+  .seasonality-editor .season-month > small {
+    font-size: 13px;
+  }
+}
+
+
+.allocation-workspace {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr);
+}
+
+.allocation-content {
+  min-width: 0;
+}
+
+.allocation-workspace > .month-status-strip {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 4px;
+  margin: 0;
+  padding: 12px 7px;
+  border: 0;
+  border-right: 1px solid #e2e9d8;
+  border-radius: 0;
+  background: #f8faf5;
+  overflow: visible;
+}
+
+.allocation-workspace > .month-status-strip > button {
+  flex: 1;
+  justify-content: center;
+  min-height: 32px;
+  padding: 7px 4px;
+  color: #718362;
+  font-size: 10px;
+}
+
+.allocation-workspace > .month-status-strip > button:hover {
+  background: #edf4e4;
+  color: #376a26;
+}
+
+.allocation-workspace > .month-status-strip > button.active {
+  background: #e4efd8;
+  color: #356b23;
+  box-shadow: inset 3px 0 #33820d;
+}
+
+.allocation-workspace > .month-status-strip > button:focus-visible {
+  outline: 2px solid #33820d;
+  outline-offset: 1px;
+}
+
+@media (max-width: 700px) {
+  .allocation-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .allocation-workspace > .month-status-strip {
+    flex-direction: row;
+    padding: 8px;
+    border-right: 0;
+    border-bottom: 1px solid #e2e9d8;
+    overflow-x: auto;
+  }
+
+  .allocation-workspace > .month-status-strip > button {
+    flex: 0 0 38px;
+  }
+
+  .allocation-workspace > .month-status-strip > button.active {
+    box-shadow: inset 0 -3px #33820d;
+  }
+}
+.monthly-budget { display: grid; gap: 12px; padding: 20px 0; margin: 14px 0; border-block: 1px solid #e2e9dc; }
+.monthly-budget>div { display: flex; justify-content: space-between; align-items: baseline; gap: 18px; }
+.monthly-budget span { font-size: 13px; color: #72816b; }
+.monthly-budget strong { font-size: 18px; text-align: right; }
+.monthly-budget>div:first-child strong { font-size: 24px; color: #557f3e; }
+.monthly-adjust-note { margin: 20px 0 16px; font-size: 13px; line-height: 1.6; color: #72816b; }

@@ -1,0 +1,41 @@
+.xray { display:flex; flex-direction:column; gap:21px; }
+.xray-back { margin-bottom:-9px; }
+.xray-back .bt-btn { padding-left:0; color:#6f8e57; }
+.xray-hero { display:flex; align-items:center; gap:20px; padding:26px 28px; background:#eef5e5; border:1px solid #dce8cc; border-radius:0 22px 22px 22px; flex-wrap:wrap; }
+.xray-hero .large-entity-icon { width:56px; height:56px; background:#fff; }
+.xray-hero-main { flex:1; min-width:240px; }
+.xray-hero-main h1 { margin-top:6px; font-size:34px; }
+.xray-hero-meta { display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-top:12px; font-size:11px; color:#7a8c6e; }
+.xray-hero-meta>span { display:inline-flex; align-items:center; gap:6px; }
+.xray-hero-actions { display:flex; gap:10px; flex-wrap:wrap; }
+.xray-alerts ul, .xray-activity ul { list-style:none; margin:0; padding:0; }
+.xray-alerts li { display:flex; align-items:center; gap:12px; padding:14px 24px; border-bottom:1px solid #ffcd00; font-size:12px; color:#7a5f00; background:#ffcd00; }
+.xray-alerts li:last-child { border-bottom:0; }
+.xray-alerts li>svg { color:#7a5f00; flex-shrink:0; }
+.xray-alerts li>span { flex:1; }
+.xray-ok { display:flex; align-items:center; gap:12px; padding:15px 22px; background:#f0f6e8; border:1px solid #dce8cc; border-radius:0 12px 12px 12px; color:#4f7a35; font-size:12px; }
+.xray-table td { height:auto; padding:15px 20px; vertical-align:middle; }
+.xray-table tfoot td { background:#fafbf8; border-top:1px solid #ebefe5; font-size:11px; font-weight:750; color:#6b7d61; padding:15px 20px; }
+.xray-table .entity-cell strong { white-space:normal; }
+.xray-sub, .xray-share { display:block; font-size:9px; color:#a0ac95; font-weight:500; margin-top:4px; }
+.xray-spark { display:flex; align-items:flex-end; gap:3px; height:34px; width:132px; }
+.xray-spark>span { flex:1; height:100%; display:flex; align-items:flex-end; background:#f3f6ef; border-radius:2px; }
+.xray-spark>span>i { display:block; width:100%; background:#8cb455; border-radius:2px 2px 0 0; }
+.xray-spark>span.missing>i { background:#ffcd00; }
+.xray-weight { display:flex; height:16px; border-radius:8px; overflow:hidden; background:#eef2e9; gap:2px; }
+.xray-weight>span { display:block; min-width:3px; }
+.xray-weight-legend { list-style:none; margin:18px 0 0; padding:0; display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:10px 24px; }
+.xray-weight-legend li { display:flex; align-items:center; gap:8px; font-size:11px; color:#6b7d61; }
+.xray-weight-legend i { width:9px; height:9px; border-radius:3px; flex-shrink:0; }
+.xray-weight-legend li>span { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.xray-weight-legend small { color:#a0ac95; font-size:10px; }
+.xray-weight-note { display:flex; align-items:center; gap:7px; margin-top:16px; font-size:10px; color:#7a5f00; }
+.xray-activity li { display:flex; align-items:center; gap:13px; padding:14px 24px; border-bottom:1px solid #edf1e7; font-size:12px; color:#6b7d61; }
+.xray-activity li:last-child { border-bottom:0; }
+.xray-activity li>span:nth-child(2) { flex:1; min-width:0; }
+.xray-activity time { font-size:10px; color:#a0ac95; white-space:nowrap; }
+.xray-empty { padding:24px; font-size:12px; color:#98aa86; }
+@media(max-width:800px){ .xray-hero { padding:22px; } .xray-hero-main h1 { font-size:28px; } }
+.agency-card.is-clickable { cursor:pointer; transition:border-color .15s, box-shadow .15s; }
+.agency-card.is-clickable:hover { border-color:#a7c585; box-shadow:0 6px 18px #173b1b14; }
+.xray-panel { display:flex; flex-direction:column; gap:21px; }

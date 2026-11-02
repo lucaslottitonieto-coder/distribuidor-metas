@@ -1,0 +1,22 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "noUnusedLocals": false,
+    "types": [
+      "vite/client"
+    ],
+    "paths": {
+      "broto-ui": [
+        "../src/index.ts"
+      ]
+    }
+  },
+  "include": [
+    ".",
+    "../src"
+  ],
+  "exclude": [
+    "vite.config.ts",
+    "dist"
+  ]
+}

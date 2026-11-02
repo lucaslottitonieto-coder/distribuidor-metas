@@ -1,0 +1,9 @@
+/* Regional: aparece em letras pequenas acima do nome da agência e como filtro antes do filtro de agência. */
+.regional-tag { display:block; margin:0 0 3px; font-size:9px; font-weight:800; letter-spacing:.5px; line-height:1.3; text-transform:uppercase; color:#6f9a52; white-space:normal; }
+.entity-cell .regional-tag,.portfolio-agency-name .regional-tag,.annual-agency-row .regional-tag { margin:0 0 3px; font-size:9px; color:#6f9a52; }
+.matrix-agency-name .regional-tag,.matrix-row-toggle .regional-tag,.matrix-row-static .regional-tag { margin:0; font-size:8.5px; letter-spacing:.45px; }
+.matrix-row-toggle>span { min-width:0; }
+.season-target-row .bt-check small.regional-tag { margin:0 0 3px!important; font-size:9px!important; color:#6f9a52!important; }
+.season-agency-filter .season-regional-select .bt-select { min-width:170px; max-width:220px; }
+.season-target-toolbar .bt-select { min-width:170px; max-width:220px; font-size:11px; }
+.settings-regional-count { color:#6b7d61; font-size:12px; }

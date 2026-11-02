@@ -1,0 +1,52 @@
+.annual-workflow { display:flex; align-items:center; gap:18px; flex-wrap:wrap; background:#f1f6eb; border:1px solid #dce7d5; padding:16px 20px; border-radius:12px; }
+.annual-workflow-copy { margin-right:auto; color:#315736; font-size:13px; }
+.annual-workflow-copy strong { display:block; margin-bottom:4px; }
+.annual-workflow-copy span { color:#74816d; font-size:11px; }
+.annual-workflow .bt-btn { font-size:12px; }
+.annual-dialog { width:min(1120px,calc(100vw - 40px)); max-width:calc(100vw - 40px); }
+.annual-dialog .bt-dialog-body { display:flex; flex-direction:column; gap:20px; }
+.annual-product-select { display:grid; grid-template-columns:minmax(220px,1fr) 2fr; gap:24px; align-items:center; }
+.annual-product-select p,.annual-import-guide p { font-size:13px; color:#74816d; line-height:1.7; }
+.annual-agencies { border:1px solid #dce7d5; border-radius:10px; overflow:auto; max-height:280px; }
+.annual-agency-heading,.annual-agency-row { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:12px 16px; border-bottom:1px solid #e5ebdf; }
+.annual-agency-heading { background:#f3f7ed; font-size:12px; color:#547046; position:sticky; top:0; z-index:1; }
+.annual-agency-row:last-child { border-bottom:0; }
+.annual-agency-row .bt-input { width:180px; text-align:right; }
+.annual-agency-row small { display:block; color:#819078; font-size:11px; margin-top:4px; }
+.annual-agency-row>strong { font-size:14px; white-space:nowrap; }
+.annual-method-note { display:flex; gap:10px; background:#f6f8f2; border-radius:8px; padding:13px 15px; color:#6c7e60; font-size:12px; line-height:1.65; }
+.annual-method-note svg { flex-shrink:0; margin-top:2px; }
+.annual-weights { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:12px; }
+.annual-preview { min-width:0; }
+.annual-preview h3 { font-size:15px; color:#315736; margin-bottom:12px; }
+.annual-preview .table-scroll { max-height:320px; border:1px solid #e0e7da; border-radius:8px; }
+.annual-preview table { width:100%; font-size:12px; white-space:nowrap; }
+.annual-preview th,.annual-preview td { padding:12px; }
+.annual-preview p { font-size:11px; color:#819078; margin-top:12px; }
+.annual-footer-count { margin-right:auto; font-size:12px; color:#7b8a72; }
+.annual-import-guide { display:flex; gap:22px; align-items:center; }
+.annual-import-guide a { flex-shrink:0; }
+.annual-file-input { border:1px dashed #bdceb0; padding:18px; border-radius:8px; width:100%; background:#f8faf5; font:inherit; font-size:13px; }
+.annual-dialog .form-error ul { padding-left:20px; margin-top:10px; max-height:150px; overflow:auto; }
+.annual-empty { padding:20px; color:#819078; font-size:13px; }
+.matrix-annual-input { font-weight:850; color:#245d32; }
+.matrix-annual-input small { display:block; font-size:9px; color:#7a5f00; font-weight:600; }
+.matrix-annual-input small.matrix-annual-gap { color:#e60050; }
+/* Total anual informado fica travado: cadeado discreto ao lado do valor e botão Destravar no diálogo. */
+.matrix-annual-lock { margin-left:5px; vertical-align:-1px; color:#8b9a84; }
+.annual-total-field { display:flex; align-items:center; gap:8px; }
+@media(max-width:700px) {
+ .annual-product-select { grid-template-columns:1fr; gap:12px; }
+ .annual-weights { grid-template-columns:repeat(3,minmax(0,1fr)); }
+ .annual-agency-heading,.annual-agency-row { padding:12px 10px; gap:10px; }
+ .annual-agency-row .bt-input { width:120px; }
+ .annual-import-guide { flex-direction:column; align-items:flex-start; gap:10px; }
+ .annual-workflow { gap:10px; padding:15px; }
+ .annual-workflow-copy { width:100%; }
+ .annual-workflow .bt-btn { font-size:11px; }
+ .annual-agency-heading>strong { font-size:10px; }
+ .annual-dialog .bt-dialog-footer { flex-wrap:wrap; }
+ .annual-footer-count { flex-basis:100%; }
+}
+.annual-month-diff { list-style:none; margin:0; padding:0; display:grid; gap:2px; font-size:12px; white-space:nowrap; }
+.annual-month-diff b { color:#245d32; }

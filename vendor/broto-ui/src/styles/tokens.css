@@ -1,0 +1,140 @@
+/*
+ * Tokens da identidade visual (docs/identidade-visual.md).
+ * Todas as variáveis usam o prefixo --bt- para não colidir com o projeto hospedeiro.
+ * Para criar um tema, redefina os tokens semânticos (--bt-primary, --bt-title…) num seletor próprio.
+ */
+
+:root {
+  /* Verdes — protagonistas */
+  --bt-green-900: #0a4b1e;
+  --bt-green-800: #0d5a26;
+  --bt-green-700: #146e37;
+  --bt-green-600: #33820d;
+  --bt-green-500: #3fa110;
+  --bt-green-400: #63c733;
+  --bt-green-200: #a0dc8c;
+  --bt-green-100: #d7e6c8;
+  --bt-green-50: #f1f7ec;
+
+  /* Neutros */
+  --bt-neutral-900: #323c32;
+  --bt-neutral-700: #5a645a;
+  --bt-neutral-500: #828a82;
+  --bt-neutral-400: #aab0aa;
+  --bt-neutral-300: #cdd3cd;
+  --bt-neutral-200: #e2e6e2;
+  --bt-neutral-100: #eff2ef;
+  --bt-neutral-50: #fafafa;
+  --bt-white: #ffffff;
+
+  /* Apoio — só em estados, pequenos elementos e gráficos */
+  --bt-yellow-500: #ffcd00;
+  --bt-yellow-600: #ffcd00;
+  --bt-yellow-100: #ffcd00;
+  --bt-blue-500: #28b9ff;
+  --bt-blue-100: #b4ebff;
+  --bt-orange-600: #e64600;
+  --bt-orange-100: #faa56e;
+  --bt-red-700: #aa003c;
+  --bt-red-500: #e60050;
+  --bt-red-100: #f58c96;
+  --bt-brown-700: #5a3c1e;
+
+  /* Semânticos */
+  --bt-bg: var(--bt-neutral-50);
+  --bt-surface: var(--bt-white);
+  --bt-surface-muted: #f6f8f5;
+  --bt-text: var(--bt-neutral-900);
+  --bt-text-2: var(--bt-neutral-700);
+  --bt-text-3: var(--bt-neutral-500);
+  --bt-title: var(--bt-green-900);
+  --bt-border: var(--bt-neutral-300);
+  --bt-border-soft: var(--bt-neutral-200);
+  --bt-border-strong: var(--bt-neutral-400);
+  --bt-primary: var(--bt-green-600);
+  --bt-primary-hover: var(--bt-green-700);
+  --bt-accent: var(--bt-green-500);
+  --bt-link: var(--bt-green-600);
+  --bt-focus: var(--bt-green-500);
+  --bt-focus-ring: rgba(63, 161, 16, 0.18);
+  --bt-danger: var(--bt-red-700);
+  --bt-danger-hover: #8c0031;
+  --bt-warning-text: #8a6400;
+  --bt-row-hover: #f4f8f1;
+  --bt-row-selected: #eaf3e3;
+  --bt-sidebar-bg: var(--bt-green-900);
+  --bt-overlay: rgba(16, 32, 20, 0.42);
+
+  /* Tons de badge: fundo / texto / ponto */
+  --bt-tone-pending-bg: #ffcd00;
+  --bt-tone-pending-fg: #6b4e00;
+  --bt-tone-pending-dot: var(--bt-tone-pending-fg);
+  --bt-tone-info-bg: #e1f6ff;
+  --bt-tone-info-fg: #005a80;
+  --bt-tone-info-dot: var(--bt-blue-500);
+  --bt-tone-live-bg: #e6f4dc;
+  --bt-tone-live-fg: var(--bt-green-700);
+  --bt-tone-live-dot: var(--bt-green-500);
+  --bt-tone-success-bg: var(--bt-green-100);
+  --bt-tone-success-fg: var(--bt-green-700);
+  --bt-tone-success-dot: var(--bt-green-700);
+  --bt-tone-danger-bg: #fde4e7;
+  --bt-tone-danger-fg: var(--bt-red-700);
+  --bt-tone-danger-dot: var(--bt-red-700);
+  --bt-tone-neutral-bg: var(--bt-neutral-100);
+  --bt-tone-neutral-fg: var(--bt-neutral-700);
+  --bt-tone-neutral-dot: var(--bt-neutral-400);
+  --bt-tone-dark-bg: #e3e7e3;
+  --bt-tone-dark-fg: var(--bt-neutral-900);
+  --bt-tone-dark-dot: var(--bt-neutral-700);
+  --bt-tone-orange-bg: #fde6d8;
+  --bt-tone-orange-fg: #a33200;
+  --bt-tone-orange-dot: var(--bt-orange-600);
+  --bt-tone-brand-bg: var(--bt-green-50);
+  --bt-tone-brand-fg: var(--bt-green-700);
+  --bt-tone-brand-dot: var(--bt-green-500);
+
+  /* Tipografia */
+  --bt-font-display: 'Exo 2', 'Nunito', system-ui, sans-serif;
+  --bt-font-ui: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --bt-font-mono: ui-monospace, 'SFMono-Regular', 'Cascadia Mono', 'JetBrains Mono', Consolas, 'Liberation Mono', monospace;
+
+  /* Forma: o box (canto superior esquerdo reto, três arredondados) */
+  --bt-radius-box: 0 20px 20px 20px;
+  --bt-radius-box-sm: 0 12px 12px 12px;
+  --bt-radius-box-xs: 0 8px 8px 8px;
+  --bt-radius: 10px;
+  --bt-radius-sm: 8px;
+  --bt-radius-xs: 6px;
+
+  --bt-shadow-1: 0 1px 2px rgba(10, 75, 30, 0.05);
+  --bt-shadow-hover: 0 6px 18px -10px rgba(10, 75, 30, 0.35);
+  --bt-shadow-pop: 0 14px 34px -10px rgba(10, 40, 20, 0.24), 0 2px 6px rgba(10, 40, 20, 0.08);
+  --bt-shadow-dialog: 0 28px 70px -16px rgba(10, 40, 20, 0.38), 0 2px 8px rgba(10, 40, 20, 0.08);
+
+  /* Estrutura */
+  --bt-sidebar-w: 248px;
+  --bt-sidebar-w-collapsed: 72px;
+  --bt-topbar-h: 64px;
+  --bt-page-pad-x: 32px;
+  --bt-page-max-w: 1520px;
+
+  /* Painel de logs (fundo escuro) */
+  --bt-log-bg: #0b1a10;
+  --bt-log-bg-2: #102417;
+  --bt-log-border: #1d3a25;
+  --bt-log-text: #d5e3d5;
+  --bt-log-muted: #7f957f;
+  --bt-log-stderr: #ff9aa6;
+  --bt-log-sdk: #a0dc8c;
+  --bt-log-warn: #ffd84d;
+
+  /* Camadas */
+  --bt-z-sidebar: 60;
+  --bt-z-topbar: 50;
+  --bt-z-overlay: 100;
+  --bt-z-menu: 120;
+  --bt-z-toast: 200;
+
+  --bt-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+}

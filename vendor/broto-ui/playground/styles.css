@@ -1,0 +1,9 @@
+/* Espelha dist/styles.css a partir do código-fonte (mesma ordem do scripts/build-css.mjs). */
+@import '../src/styles/tokens.css';
+@import '../src/styles/base.css';
+@import '../src/styles/components.css';
+@import '../src/styles/forms.css';
+@import '../src/styles/data.css';
+@import '../src/styles/overlays.css';
+@import '../src/styles/layout.css';
+@import '../src/styles/patterns.css';
